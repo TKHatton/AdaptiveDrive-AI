@@ -18,3 +18,13 @@
   scrollbar-width: none;
 }
 
+/* Smooth animations */
+* {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Selection color */
+::selection {
+  background-color: rgba(47, 109, 246, 0.2);
+}

@@ -1,79 +1,135 @@
-# AdaptiveDrive AI — A Multimodal AI Coach for Adaptive Hand-Control Driving
+# AdaptiveDrive AI
 
-AdaptiveDrive AI is a multimodal AI driving coach designed to help individuals learn and practice adaptive hand-control driving techniques in a safe, simulated environment.
+**A multimodal AI driving coach for adaptive hand-control driving.**
 
-Built for the **Gemini Live Agent Challenge**, this project leverages Gemini 3.1's multimodal capabilities, MediaPipe's computer vision, and Three.js for real-time visual feedback.
+AdaptiveDrive AI is a training simulator that teaches adaptive hand-control driving techniques through gesture recognition, real-time AI coaching, and 3D driving environments. Built for the Gemini Live Agent Challenge.
 
-## Features
+## Why This Exists
 
-- **Real-time Hand Tracking**: Uses MediaPipe Hands to detect push/pull motions simulating adaptive throttle and brake controls.
-- **Multimodal AI Coaching**: Gemini 3.1 acts as a live instructor, providing voice guidance and reacting to user movements.
-- **Scenario-Based Training**: Includes guided exercises for starting, stopping, and turning.
-- **3D Visualization**: A responsive Three.js environment providing visual context for driving scenarios.
-- **Accessible UI**: A clean, dashboard-inspired interface focused on clarity and ease of use.
+Over 600,000 people in the U.S. drive with adaptive hand controls. Learning to operate push/pull throttle-brake levers is challenging, and real-world practice can feel high-stakes. AdaptiveDrive AI provides a safe, interactive environment where users can build muscle memory and confidence before they ever touch a real vehicle.
+
+## How It Works
+
+1. **Hand Tracking**: Your webcam tracks hand movements using MediaPipe. Push forward to brake. Pull back to accelerate. Move left/right to steer. No special hardware needed.
+
+2. **3D Driving Environment**: A Three.js scene renders a road with trees, buildings, stop signs, and intersections. The car responds to your hand movements in real time.
+
+3. **AI Coaching**: Gemini connects as a live driving instructor via the Live API. It watches your hand data, coaches you through scenarios ("Ease off the throttle... begin braking now..."), and provides performance feedback.
+
+4. **AI-Generated Scenery**: In Scenario Mode, Gemini generates photorealistic background images matching each driving scenario for visual immersion.
+
+## Scenarios
+
+| Scenario | What You Practice |
+|----------|------------------|
+| Starting the Vehicle | Smooth, gentle acceleration from a stop |
+| Approaching a Stop Sign | Gradual braking with distance-based coaching |
+| Turning at an Intersection | Coordinating speed control with steering |
 
 ## Technology Stack
 
-- **Frontend**: React, TypeScript, Three.js, MediaPipe Hands
-- **AI**: Gemini 3.1 (Google GenAI SDK)
-- **Backend**: Node.js, Express (Google Cloud Run ready)
-- **Styling**: Tailwind CSS, Motion (Framer Motion)
+| Layer | Technology |
+|-------|-----------|
+| Frontend | React 19, TypeScript, Tailwind CSS v4 |
+| 3D Rendering | Three.js (procedural scene with shadows, fog, trees, buildings) |
+| Hand Tracking | MediaPipe Hands (single hand, push/pull/steer detection) |
+| AI Coaching | Gemini Live API (real-time audio + text, native audio dialog) |
+| Image Generation | Gemini Image Generation (scenario backgrounds) |
+| Animation | Motion (Framer Motion) |
+| Backend | Express + Vite dev server |
+| Deployment | Google Cloud Run ready |
 
 ## Getting Started
 
 ### Prerequisites
 
 - Node.js 18+
-- A Google Gemini API Key
+- A Google Gemini API Key with access to the Live API
 
 ### Installation
 
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/your-repo/adaptive-drive-ai.git
-   cd adaptive-drive-ai
-   ```
+```bash
+git clone https://github.com/your-repo/adaptive-drive-ai.git
+cd adaptive-drive-ai
+npm install
+```
 
-2. Install dependencies:
-   ```bash
-   npm install
-   ```
+### Environment Setup
 
-3. Set up environment variables:
-   Create a `.env` file in the root directory:
-   ```env
-   GEMINI_API_KEY=your_api_key_here
-   ```
+Create a `.env` file in the root:
 
-### Running Locally
+```env
+GEMINI_API_KEY=your_api_key_here
+```
+
+### Run Locally
 
 ```bash
 npm run dev
 ```
-The application will be available at `http://localhost:3000`.
 
-## Deployment (Google Cloud Run)
+Open [http://localhost:3000](http://localhost:3000).
 
-To deploy the backend to Google Cloud Run:
+### Build for Production
 
-1. Build the project:
-   ```bash
-   npm run build
-   ```
-
-2. Deploy using gcloud CLI:
-   ```bash
-   gcloud run deploy adaptive-drive-ai \
-     --source . \
-     --env-vars-file .env.yaml \
-     --platform managed \
-     --region us-central1 \
-     --allow-unauthenticated
-   ```
+```bash
+npm run build
+npm start
+```
 
 ## Architecture
 
-See [docs/architecture.md](./docs/architecture.md) for a detailed system overview.
+```
+User (Webcam + Hands)
+    |
+    v
+MediaPipe Hands --> useHandTracking hook
+    |                   |
+    |     Throttle / Brake / Steering (normalized 0-100 / -1 to 1)
+    |                   |
+    v                   v
+DrivingScene        useGeminiLive hook
+(Three.js 3D)       (Gemini Live API)
+    |                   |
+    |    Real-time       |    AI coaching
+    |    visual          |    (voice + text)
+    |    feedback        |
+    v                   v
+         App.tsx (React)
+         Dashboard UI + Scenario Engine
+```
+
+**Key design decisions:**
+- Single-hand tracking for accessibility (many adaptive drivers use one hand)
+- Push/pull Z-axis detection maps directly to real adaptive lever mechanics
+- 15-frame calibration period on hand detection for stable neutral position
+- Exponential moving average smoothing on all hand values to reduce jitter
+- Gemini receives structured `[SYSTEM DATA]` payloads with scenario context
+- Audio playback handles raw 16-bit PCM at 24kHz (Gemini Live output format)
+- 3D scenery (trees, buildings, lights) scrolls past the camera for motion illusion
+- Road dashed lines animate independently for visible road movement
+
+## Deployment (Google Cloud Run)
+
+```bash
+npm run build
+
+gcloud run deploy adaptive-drive-ai \
+  --source . \
+  --env-vars-file .env.yaml \
+  --platform managed \
+  --region us-central1 \
+  --allow-unauthenticated
+```
+
+## Accessibility
+
+This project is built with accessibility in mind:
+- Single-hand operation (matches real adaptive driving controls)
+- High-contrast UI with clear visual feedback
+- Text transcripts of all AI coaching (not audio-only)
+- Large, clearly labeled controls
+- No reliance on color alone for status indicators
 
 ## License
 
