@@ -1,0 +1,8 @@
+{
+  "name": "AdaptiveDrive AI",
+  "description": "A multimodal AI driving coach for adaptive hand-control driving using Gemini 3.1, MediaPipe, and Three.js.",
+  "requestFramePermissions": [
+    "camera",
+    "microphone"
+  ]
+}
