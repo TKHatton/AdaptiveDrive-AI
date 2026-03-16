@@ -9,3 +9,13 @@ coverage/
 
 # Personal notes (not for judges)
 LT-NOTES.md
+
+# Slides build tooling (presentation .pptx is local only)
+slides/
+
+# Claude worktrees
+.claude/worktrees/
+
+# OS files
+Thumbs.db
+Desktop.ini

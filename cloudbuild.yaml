@@ -1,0 +1,12 @@
+steps:
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'build'
+      - '--build-arg'
+      - 'GEMINI_API_KEY=${_GEMINI_API_KEY}'
+      - '-t'
+      - 'us-central1-docker.pkg.dev/$PROJECT_ID/adaptivedrive/adaptivedrive-ai'
+      - '.'
+images:
+  - 'us-central1-docker.pkg.dev/$PROJECT_ID/adaptivedrive/adaptivedrive-ai'
+timeout: '600s'
